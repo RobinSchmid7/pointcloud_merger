@@ -1,0 +1,12 @@
+<library path="lib/libpointcloud_merger">
+  <class name="pointcloud_merger/PointCloudMerger"
+         type="pointcloud_merger::PointCloudMerger"
+         base_class_type="nodelet::Nodelet">
+    <description>Merge pointclouds with over multiple time steps and publish a single pointcloud</description>
+  </class>
+  <class name="pointcloud_merger/PassThroughFilter"
+       type="pointcloud_merger::PassThroughFilter"
+       base_class_type="nodelet::Nodelet">
+    <description>Relative version of pass through filter</description>
+  </class>
+</library>
