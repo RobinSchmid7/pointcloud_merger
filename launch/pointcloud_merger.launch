@@ -1,8 +1,8 @@
 <launch>
   <!--  Parameters-->
-  <arg name="cloud_in" default="/lidar/point_cloud"/>
-  <arg name="cloud_out" default="/point_cloud_merged"/>
-  <arg name="odom" default="/state_estimator/odometry"/>
+  <arg name="cloud_in" default="/pointcloud_in"/>
+  <arg name="cloud_out" default="/pointcloud_out"/>
+  <arg name="odom" default="/odometry"/>
   <arg name="fixed_frame" default="odom"/>
   <!--    -->
 
@@ -47,7 +47,7 @@
           # Minimum rotation before new measurement is added [rad]
           min_rotation_between_input: 0.2
 
-          # Allowable delay in TF data[s]
+          # Allowable delay in TF data [s]
           transform_tolerance: 10.0
         </rosparam>
       </node>
