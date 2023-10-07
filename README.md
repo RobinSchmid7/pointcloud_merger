@@ -12,7 +12,7 @@ catkin build pointcloud_merger
 roslaunch pointcloud_merger pointcloud_merger.launch
 ``
 
-Fuses multiple pointclouds from multiple time stamps into a single point cloud.
+Fuses pointclouds from multiple time stamps into a single point cloud.
 
 #### Parameters for merging
 * `cloud_in`: input point cloud
@@ -24,12 +24,12 @@ Fuses multiple pointclouds from multiple time stamps into a single point cloud.
 * `min_rotation_between_input`: minimum rotation before new measurement is added [rad]
 * `transform_tolerance`: allowable delay in TF data [s]
 
-### B) Fusing pointclouds from multiple time stamps and crop them spacially
+### B) Fusing pointclouds from multiple time stamps and crop them spatially
 ``
 roslaunch pointcloud_merger pointcloud_merger_crop.launch
 ``
 
-Fuses multiple poinclouds from multiple time stamps into a single point cloud and crops thme from a given bounding box.
+Fuses poinclouds from multiple time stamps into a single point cloud and crops thme from a given bounding box.
 
 #### Parameters for merging
 * `cloud_in`: input point cloud
