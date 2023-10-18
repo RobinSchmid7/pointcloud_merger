@@ -29,7 +29,7 @@ Fuses pointclouds from multiple time stamps into a single point cloud.
 roslaunch pointcloud_merger pointcloud_merger_crop.launch
 ``
 
-Fuses poinclouds from multiple time stamps into a single point cloud and crops thme from a given bounding box.
+Fuses poinclouds from multiple time stamps into a single point cloud and crops them from a given bounding box.
 
 #### Parameters for merging
 * `cloud_in`: input point cloud
