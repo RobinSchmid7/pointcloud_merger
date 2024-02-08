@@ -37,7 +37,7 @@
           # Mandatory frame_id where merge happens. Has to be different from data frame_id
           merge_frame: $(arg fixed_frame)
 
-          # Minimum time before new measurement is added [m]
+          # Minimum time before new measurement is added [s]
           min_time_between_input: 1.0
 
           # Minimum translation before new measurement is added [m]
