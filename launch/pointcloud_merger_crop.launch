@@ -32,16 +32,16 @@
         <remap from="~input" to="$(arg cloud_in)"/>
         <rosparam subst_value="true">
           # Number of point clouds to keep in queue
-          output_queue_size: 5
+          output_queue_size: 10
 
           # Mandatory frame_id where merge happens. Has to be different from data frame_id
           merge_frame: $(arg fixed_frame)
 
           # Minimum time before new measurement is added [s]
-          min_time_between_input: 1.0
+          min_time_between_input: 0.5
 
           # Minimum translation before new measurement is added [m]
-          min_translation_between_input: 1.0
+          min_translation_between_input: 0.5
 
           # Minimum rotation before new measurement is added [rad]
           min_rotation_between_input: 0.2
@@ -59,10 +59,26 @@
               respawn="$(arg respawn)">
         <remap from="~input" to="merger_filter/output"/>
         <rosparam>
-          reference_frame: cam4_sensor_frame
+          reference_frame: base
           filter_field_name: y
-          filter_limit_min: -30.0
-          filter_limit_max: 0.0
+          filter_limit_min: -4.0
+          filter_limit_max: 4.0
+        </rosparam>
+      </node>
+<!-- Crop along x axis -->
+      <node pkg="nodelet"
+              type="nodelet"
+              name="passthrough_filter_2"
+              args="load pointcloud_merger/PassThroughFilter $(arg nodelet_manager) $(arg nodelet_args)"
+              respawn="$(arg respawn)">
+        <remap from="~input" to="passthrough_filter_1/output"/>
+        <remap from="~output" to="$(arg cloud_out)"/>
+
+        <rosparam>
+          reference_frame: base
+          filter_field_name: x
+          filter_limit_min: -4.0
+          filter_limit_max: 4.0
         </rosparam>
       </node>
 
