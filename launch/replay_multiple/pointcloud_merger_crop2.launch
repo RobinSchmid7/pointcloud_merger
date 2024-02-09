@@ -1,0 +1,125 @@
+<launch>
+  <!--  Parameters-->
+  <arg name="instance" default="1"/>
+  <arg name="cloud_in" default="/depth_camera_rear_upper/point_cloud_self_filtered"/>
+  <arg name="cloud_out" default="/pointcloud_out_$(arg instance)"/>
+  <arg name="odom" default="/state_estimator/odometry"/>
+  <arg name="fixed_frame" default="odom"/>
+  <!--    -->
+
+  <arg name="use_gdb" default="false"/>
+  <arg name="launch_prefix" value="xterm -e gdb --args" if="$(arg use_gdb)"/>
+  <arg name="launch_prefix" value="" unless="$(arg use_gdb)"/>
+
+  <arg name="nodelet_manager" default="nodelet_manager_$(arg instance)"/>
+  <arg name="nodelet_args" default="--no-bond"/>
+  <arg name="respawn" default="false"/>
+  <arg name="simulation" default="false"/>
+
+  <node pkg="nodelet"
+          type="nodelet"
+          name="$(arg nodelet_manager)"
+          launch-prefix="$(arg launch_prefix)"
+          args="manager"
+          output="screen"
+          respawn="$(arg respawn)"/>
+
+      <node pkg="nodelet"
+            type="nodelet"
+            name="merger_filter_$(arg instance)"
+            args="load pointcloud_merger/PointCloudMerger $(arg nodelet_manager) $(arg nodelet_args)"
+            launch-prefix="$(arg launch_prefix)"
+            output="screen">
+        <remap from="~input" to="$(arg cloud_in)"/>
+        <rosparam subst_value="true">
+          # Number of point clouds to keep in queue
+          output_queue_size: 6
+
+          # Mandatory frame_id where merge happens. Has to be different from data frame_id
+          merge_frame: $(arg fixed_frame)
+
+          # Minimum time before new measurement is added [s]
+          min_time_between_input: 1.0
+
+          # Minimum translation before new measurement is added [m]
+          min_translation_between_input: 1.0
+
+          # Minimum rotation before new measurement is added [rad]
+          min_rotation_between_input: 0.2
+
+          # Allowable delay in TF data[s]
+          transform_tolerance: 10.0
+        </rosparam>
+      </node>
+
+<!--  Crop along y axis -->
+      <node pkg="nodelet"
+              type="nodelet"
+              name="passthrough_filter_1_$(arg instance)"
+              args="load pointcloud_merger/PassThroughFilter $(arg nodelet_manager) $(arg nodelet_args)"
+              respawn="$(arg respawn)">
+        <remap from="~input" to="merger_filter_$(arg instance)/output"/>
+        <rosparam>
+          reference_frame: base
+          filter_field_name: x
+          filter_limit_min: -4.0
+          filter_limit_max: 4.0
+        </rosparam>
+      </node>
+<!-- Crop along x axis -->
+      <node pkg="nodelet"
+              type="nodelet"
+              name="passthrough_filter_2_$(arg instance)"
+              args="load pointcloud_merger/PassThroughFilter $(arg nodelet_manager) $(arg nodelet_args)"
+              respawn="$(arg respawn)">
+        <remap from="~input" to="passthrough_filter_1_$(arg instance)/output"/>
+        <remap from="~output" to="$(arg cloud_out)"/>
+
+        <rosparam>
+          reference_frame: base
+          filter_field_name: z
+          filter_limit_min: -4.0
+          filter_limit_max: 4.0
+        </rosparam>
+      </node>
+<!-- Crop along z axis -->
+      <node pkg="nodelet"
+              type="nodelet"
+              name="passthrough_filter_3_$(arg instance)"
+              args="load pointcloud_merger/PassThroughFilter $(arg nodelet_manager) $(arg nodelet_args)"
+              respawn="$(arg respawn)">
+        <remap from="~input" to="passthrough_filter_2_$(arg instance)/output"/>
+        <remap from="~output" to="$(arg cloud_out)"/>
+
+        <rosparam>
+          reference_frame: base
+          filter_field_name: y
+          filter_limit_min: -2.0
+          filter_limit_max: 4.0
+        </rosparam>
+      </node>
+
+
+<!--  Add arbitrary number of crop filters along different axis-->
+<!--  Crop along x axis -->
+<!--    <node pkg="nodelet"-->
+<!--              type="nodelet"-->
+<!--              name="passthrough_filter_2"-->
+<!--              args="load pointcloud_merger/PassThroughFilter $(arg nodelet_manager) $(arg nodelet_args)"-->
+<!--              respawn="$(arg respawn)">-->
+<!--        <remap from="~input" to="passthrough_filter_1/output"/>-->
+<!--        <remap from="~output" to="$(arg cloud_out)"/>-->
+<!--        <rosparam>-->
+<!--          reference_frame: cam4_sensor_frame-->
+<!--          filter_field_name: x-->
+<!--          filter_limit_min: -4.0-->
+<!--          filter_limit_max: 4.0-->
+<!--        </rosparam>-->
+<!--      </node>-->
+
+  <node pkg="rostopic"
+        type="rostopic"
+        name="subscriber"
+        args="hz $(arg cloud_out)"
+        output="screen"/>
+</launch>
