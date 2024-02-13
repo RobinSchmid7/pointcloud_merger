@@ -9,4 +9,9 @@
        base_class_type="nodelet::Nodelet">
     <description>Relative version of pass through filter</description>
   </class>
+  <class name="pointcloud_merger/VoxelFilter"
+       type="pointcloud_merger::VoxelFilter"
+       base_class_type="nodelet::Nodelet">
+    <description>Voxelizes a pointcloud</description>
+  </class>
 </library>

@@ -36,6 +36,7 @@ include_directories(
 add_library(${PROJECT_NAME}
         src/pointcloud_merger.cpp
         src/passthrough_filter.cpp
+        src/voxel_filter.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}

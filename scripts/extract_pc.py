@@ -60,7 +60,8 @@ class MessageSaver:
         R = np.array(tf[:3, :3])
 
         points_list = [np.matmul(R, np.array(p)) + position for p in pc]
-        return torch.tensor(points_list, dtype=torch.float32)
+        points_array = np.array(points_list)  # Convert list to numpy array
+        return torch.tensor(points_array, dtype=torch.float32)  # Convert numpy array to tensor
 
     def rospcmsg_to_pctorch(self, ros_cloud):
         try:
