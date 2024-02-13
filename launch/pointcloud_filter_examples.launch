@@ -15,6 +15,7 @@
   <arg name="respawn" default="false"/>
   <arg name="simulation" default="false"/>
 
+<!-- Starting the filter chain -->
   <node pkg="nodelet"
           type="nodelet"
           name="$(arg nodelet_manager)"
@@ -23,6 +24,7 @@
           output="screen"
           respawn="$(arg respawn)"/>
 
+<!-- Merger filter -->
       <node pkg="nodelet"
             type="nodelet"
             name="merger_filter"
@@ -51,29 +53,13 @@
         </rosparam>
       </node>
 
-<!--  Crop along y axis -->
+<!--  Crop filter along y axis -->
       <node pkg="nodelet"
               type="nodelet"
-              name="passthrough_filter_1"
+              name="crop_x_filter"
               args="load pointcloud_merger/PassThroughFilter $(arg nodelet_manager) $(arg nodelet_args)"
               respawn="$(arg respawn)">
         <remap from="~input" to="merger_filter/output"/>
-        <rosparam>
-          reference_frame: base
-          filter_field_name: y
-          filter_limit_min: -4.0
-          filter_limit_max: 4.0
-        </rosparam>
-      </node>
-<!-- Crop along x axis -->
-      <node pkg="nodelet"
-              type="nodelet"
-              name="passthrough_filter_2"
-              args="load pointcloud_merger/PassThroughFilter $(arg nodelet_manager) $(arg nodelet_args)"
-              respawn="$(arg respawn)">
-        <remap from="~input" to="passthrough_filter_1/output"/>
-        <remap from="~output" to="$(arg cloud_out)"/>
-
         <rosparam>
           reference_frame: base
           filter_field_name: x
@@ -82,22 +68,19 @@
         </rosparam>
       </node>
 
-<!--  Add arbitrary number of crop filters along different axis-->
-<!--  Crop along x axis -->
-<!--    <node pkg="nodelet"-->
-<!--              type="nodelet"-->
-<!--              name="passthrough_filter_2"-->
-<!--              args="load pointcloud_merger/PassThroughFilter $(arg nodelet_manager) $(arg nodelet_args)"-->
-<!--              respawn="$(arg respawn)">-->
-<!--        <remap from="~input" to="passthrough_filter_1/output"/>-->
-<!--        <remap from="~output" to="$(arg cloud_out)"/>-->
-<!--        <rosparam>-->
-<!--          reference_frame: cam4_sensor_frame-->
-<!--          filter_field_name: x-->
-<!--          filter_limit_min: -4.0-->
-<!--          filter_limit_max: 4.0-->
-<!--        </rosparam>-->
-<!--      </node>-->
+<!-- Voxelize filter -->
+      <node pkg="nodelet"
+              type="nodelet"
+              name="voxel_filter_$(arg instance)"
+              args="load pointcloud_merger/VoxelFilter $(arg nodelet_manager) $(arg nodelet_args)"
+              respawn="$(arg respawn)">
+        <remap from="~input" to="crop_x_filter/output"/>
+        <remap from="~output" to="$(arg cloud_out)"/>
+
+        <rosparam>
+          voxel_size: 0.1
+        </rosparam>
+      </node>
 
   <node pkg="rostopic"
         type="rostopic"
