@@ -1,9 +1,8 @@
 <launch>
   <!--  Parameters-->
-  <arg name="instance" default="0"/>
-  <arg name="cloud_in" default="/point_cloud_filter/lidar/point_cloud_filtered"/>
-  <arg name="cloud_out" default="/pointcloud_out_$(arg instance)"/>
-  <arg name="odom" default="/state_estimator/odometry"/>
+  <arg name="cloud_in" default="/pointcloud_in"/>
+  <arg name="cloud_out" default="/pointcloud_out"/>
+  <arg name="odom" default="/odometry"/>
   <arg name="fixed_frame" default="odom"/>
   <!--    -->
 
@@ -11,11 +10,12 @@
   <arg name="launch_prefix" value="xterm -e gdb --args" if="$(arg use_gdb)"/>
   <arg name="launch_prefix" value="" unless="$(arg use_gdb)"/>
 
-  <arg name="nodelet_manager" default="nodelet_manager_$(arg instance)"/>
+  <arg name="nodelet_manager" default="nodelet_manager"/>
   <arg name="nodelet_args" default="--no-bond"/>
   <arg name="respawn" default="false"/>
   <arg name="simulation" default="false"/>
 
+<!-- Starting the filter chain -->
   <node pkg="nodelet"
           type="nodelet"
           name="$(arg nodelet_manager)"
@@ -24,16 +24,17 @@
           output="screen"
           respawn="$(arg respawn)"/>
 
+<!-- Merger filter -->
       <node pkg="nodelet"
             type="nodelet"
-            name="merger_filter_$(arg instance)"
+            name="merger_filter"
             args="load pointcloud_merger/PointCloudMerger $(arg nodelet_manager) $(arg nodelet_args)"
             launch-prefix="$(arg launch_prefix)"
             output="screen">
         <remap from="~input" to="$(arg cloud_in)"/>
         <rosparam subst_value="true">
           # Number of point clouds to keep in queue
-          output_queue_size: 20
+          output_queue_size: 10
 
           # Mandatory frame_id where merge happens. Has to be different from data frame_id
           merge_frame: $(arg fixed_frame)
@@ -52,28 +53,13 @@
         </rosparam>
       </node>
 
-<!--  Crop along y axis -->
+<!--  Crop filter along y axis -->
       <node pkg="nodelet"
               type="nodelet"
-              name="passthrough_filter_1_$(arg instance)"
+              name="crop_x_filter"
               args="load pointcloud_merger/PassThroughFilter $(arg nodelet_manager) $(arg nodelet_args)"
               respawn="$(arg respawn)">
-        <remap from="~input" to="merger_filter_$(arg instance)/output"/>
-        <rosparam>
-          reference_frame: base
-          filter_field_name: y
-          filter_limit_min: -4.0
-          filter_limit_max: 4.0
-        </rosparam>
-      </node>
-<!-- Crop along x axis -->
-      <node pkg="nodelet"
-              type="nodelet"
-              name="passthrough_filter_2_$(arg instance)"
-              args="load pointcloud_merger/PassThroughFilter $(arg nodelet_manager) $(arg nodelet_args)"
-              respawn="$(arg respawn)">
-        <remap from="~input" to="passthrough_filter_1_$(arg instance)/output"/>
-
+        <remap from="~input" to="merger_filter/output"/>
         <rosparam>
           reference_frame: base
           filter_field_name: x
@@ -82,20 +68,17 @@
         </rosparam>
       </node>
 
-<!-- Crop along z axis -->
+<!-- Voxelize filter -->
       <node pkg="nodelet"
               type="nodelet"
-              name="passthrough_filter_3_$(arg instance)"
-              args="load pointcloud_merger/PassThroughFilter $(arg nodelet_manager) $(arg nodelet_args)"
+              name="voxel_filter_$(arg instance)"
+              args="load pointcloud_merger/VoxelFilter $(arg nodelet_manager) $(arg nodelet_args)"
               respawn="$(arg respawn)">
-        <remap from="~input" to="passthrough_filter_2_$(arg instance)/output"/>
+        <remap from="~input" to="crop_x_filter/output"/>
         <remap from="~output" to="$(arg cloud_out)"/>
 
         <rosparam>
-          reference_frame: base
-          filter_field_name: z
-          filter_limit_min: -2.0
-          filter_limit_max: 4.0
+          voxel_size: 0.1
         </rosparam>
       </node>
 

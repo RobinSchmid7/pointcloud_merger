@@ -108,24 +108,6 @@
         </rosparam>
       </node>
 
-
-<!--  Add arbitrary number of crop filters along different axis-->
-<!--  Crop along x axis -->
-<!--    <node pkg="nodelet"-->
-<!--              type="nodelet"-->
-<!--              name="passthrough_filter_2"-->
-<!--              args="load pointcloud_merger/PassThroughFilter $(arg nodelet_manager) $(arg nodelet_args)"-->
-<!--              respawn="$(arg respawn)">-->
-<!--        <remap from="~input" to="passthrough_filter_1/output"/>-->
-<!--        <remap from="~output" to="$(arg cloud_out)"/>-->
-<!--        <rosparam>-->
-<!--          reference_frame: cam4_sensor_frame-->
-<!--          filter_field_name: x-->
-<!--          filter_limit_min: -4.0-->
-<!--          filter_limit_max: 4.0-->
-<!--        </rosparam>-->
-<!--      </node>-->
-
   <node pkg="rostopic"
         type="rostopic"
         name="subscriber"
