@@ -107,7 +107,7 @@
         <remap from="~output" to="$(arg cloud_out)"/>
 
         <rosparam>
-          voxel_size: 0.1
+          voxel_size: 0.04
         </rosparam>
       </node>
 
