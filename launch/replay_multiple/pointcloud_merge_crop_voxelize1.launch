@@ -52,7 +52,8 @@
         </rosparam>
       </node>
 
-<!--  Crop along y axis -->
+<!-- Cropping always happens along the axis of the merged point cloud, the reference frame is just for the origin of the cropping -->
+<!--  Crop along x axis -->
       <node pkg="nodelet"
               type="nodelet"
               name="passthrough_filter_1_$(arg instance)"
@@ -61,9 +62,9 @@
         <remap from="~input" to="merger_filter_$(arg instance)/output"/>
         <rosparam>
           reference_frame: base
-          filter_field_name: y
-          filter_limit_min: -4.0
-          filter_limit_max: 4.0
+          filter_field_name: x
+          filter_limit_min: -6.0
+          filter_limit_max: 6.0
         </rosparam>
       </node>
 <!-- Crop along x axis -->
@@ -76,9 +77,9 @@
 
         <rosparam>
           reference_frame: base
-          filter_field_name: x
-          filter_limit_min: -4.0
-          filter_limit_max: 4.0
+          filter_field_name: y
+          filter_limit_min: -6.0
+          filter_limit_max: 6.0
         </rosparam>
       </node>
 
@@ -94,7 +95,7 @@
           reference_frame: base
           filter_field_name: z
           filter_limit_min: -2.0
-          filter_limit_max: 4.0
+          filter_limit_max: 3.0
         </rosparam>
       </node>
 <!-- Voxelize point cloud -->
