@@ -1,5 +1,7 @@
 # Pointcloud Merger
 
+![demo](docs/demo.gif)
+
 ## Installation
 ``
 catkin build pointcloud_merger
