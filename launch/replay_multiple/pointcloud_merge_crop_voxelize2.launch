@@ -33,7 +33,7 @@
         <remap from="~input" to="$(arg cloud_in)"/>
         <rosparam subst_value="true">
           # Number of point clouds to keep in queue
-          output_queue_size: 6
+          output_queue_size: 10
 
           # Mandatory frame_id where merge happens. Has to be different from data frame_id
           merge_frame: $(arg fixed_frame)
@@ -51,8 +51,8 @@
           transform_tolerance: 10.0
         </rosparam>
       </node>
-
-<!--  Crop along y axis -->
+<!-- Cropping always happens along the axis of the merged point cloud, the reference frame is just for the origin of the cropping -->
+<!--  Crop along x axis -->
       <node pkg="nodelet"
               type="nodelet"
               name="passthrough_filter_1_$(arg instance)"
@@ -62,11 +62,11 @@
         <rosparam>
           reference_frame: base
           filter_field_name: x
-          filter_limit_min: -4.0
-          filter_limit_max: 4.0
+          filter_limit_min: -6.0
+          filter_limit_max: 6.0
         </rosparam>
       </node>
-<!-- Crop along x axis -->
+<!-- Crop along y axis -->
       <node pkg="nodelet"
               type="nodelet"
               name="passthrough_filter_2_$(arg instance)"
@@ -75,9 +75,9 @@
         <remap from="~input" to="passthrough_filter_1_$(arg instance)/output"/>
         <rosparam>
           reference_frame: base
-          filter_field_name: z
-          filter_limit_min: -4.0
-          filter_limit_max: 4.0
+          filter_field_name: y
+          filter_limit_min: -2.0
+          filter_limit_max: 3.0
         </rosparam>
       </node>
 <!-- Crop along z axis -->
@@ -89,9 +89,9 @@
         <remap from="~input" to="passthrough_filter_2_$(arg instance)/output"/>
         <rosparam>
           reference_frame: base
-          filter_field_name: y
-          filter_limit_min: -2.0
-          filter_limit_max: 4.0
+          filter_field_name: z
+          filter_limit_min: -6.0
+          filter_limit_max: 6.0
         </rosparam>
       </node>
 <!-- Voxelize point cloud -->
@@ -104,7 +104,7 @@
         <remap from="~output" to="$(arg cloud_out)"/>
 
         <rosparam>
-          voxel_size: 0.1
+          voxel_size: 0.04
         </rosparam>
       </node>
 
