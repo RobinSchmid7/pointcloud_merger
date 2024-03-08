@@ -10,11 +10,13 @@ catkin build pointcloud_merger
 ## Usage
 
 ### Fusing pointclouds from multiple time stamps
+
 ``
 roslaunch pointcloud_merger pointcloud_filter_examples.launch
 ``
 
 If you are replaying a bag, do not forget to use sim time.
+
 ``
 rosparam set /use_sim_time true
 ``
