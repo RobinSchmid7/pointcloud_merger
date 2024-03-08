@@ -14,6 +14,11 @@ catkin build pointcloud_merger
 roslaunch pointcloud_merger pointcloud_filter_examples.launch
 ``
 
+If you are replaying a bag, do not forget to use sim time.
+``
+rosparam set /use_sim_time true
+``
+
 This file contains a filter chain to merge pointclouds temporally, crop and voxelize them spacially into a single point cloud.
 
 #### Parameters for merging
