@@ -1,0 +1,36 @@
+<launch>
+  <!--  Parameters-->
+  <arg name="cloud_out" default="/merged_pointcloud"/>
+  <arg name="use_gdb" default="false"/>
+  <arg name="launch_prefix" value="xterm -e gdb --args" if="$(arg use_gdb)"/>
+  <arg name="launch_prefix" value="" unless="$(arg use_gdb)"/>
+
+  <arg name="nodelet_manager" default="nodelet_manager"/>
+  <arg name="nodelet_args" default="--no-bond"/>
+  <arg name="respawn" default="false"/>
+  <arg name="simulation" default="false"/>
+
+  <node pkg="nodelet"
+          type="nodelet"
+          name="$(arg nodelet_manager)"
+          launch-prefix="$(arg launch_prefix)"
+          args="manager"
+          output="screen"
+          respawn="$(arg respawn)"/>
+
+ <node pkg="nodelet" 
+        type="nodelet" 
+        name="merge_clouds" 
+        args="load pcl/PointCloudConcatenateDataSynchronizer $(arg nodelet_manager) $(arg nodelet_args)"
+        respawn="$(arg respawn)">
+    <remap from="~output" to="$(arg cloud_out)"/>
+    <rosparam>
+        approximate_sync: true
+        queue_size: 10
+        output_frame: base
+        input_topics:
+            - /pointcloud_out_0
+            - /pointcloud_out_1
+    </rosparam>
+  </node>
+</launch>

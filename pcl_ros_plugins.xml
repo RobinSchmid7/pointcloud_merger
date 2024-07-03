@@ -14,4 +14,7 @@
        base_class_type="nodelet::Nodelet">
     <description>Voxelizes a pointcloud</description>
   </class>
+  <class name="pointcloud_merger/PointCloudXYZFilterNodelet" type="pointcloud_merger::PointCloudXYZFilterNodelet" base_class_type="nodelet::Nodelet">
+    <description>PointCloud XYZ Filter Nodelet</description>
+  </class>
 </library>
