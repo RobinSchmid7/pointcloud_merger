@@ -61,4 +61,4 @@ namespace pointcloud_merger {
       boost::mutex data_mutex_;
     };
 
-}  // namespace pointcloud_filters
+}  // namespace pointcloud_merger

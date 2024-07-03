@@ -37,6 +37,7 @@ add_library(${PROJECT_NAME}
         src/pointcloud_merger.cpp
         src/passthrough_filter.cpp
         src/voxel_filter.cpp
+        src/pointcloud_filter_xyz.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}

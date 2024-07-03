@@ -21,4 +21,4 @@ namespace pointcloud_merger {
       pcl::PassThrough<pcl::PCLPointCloud2> impl_;
     };
 
-}  // namespace passthrough_filter
+}  // namespace pointcloud_merger

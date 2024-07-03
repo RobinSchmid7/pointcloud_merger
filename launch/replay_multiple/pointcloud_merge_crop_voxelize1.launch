@@ -105,16 +105,20 @@
               args="load pointcloud_merger/VoxelFilter $(arg nodelet_manager) $(arg nodelet_args)"
               respawn="$(arg respawn)">
         <remap from="~input" to="passthrough_filter_3_$(arg instance)/output"/>
-        <remap from="~output" to="$(arg cloud_out)"/>
+        <remap from="~output" to="xyz_filter_$(arg instance)/output"/>
 
         <rosparam>
           voxel_size: 0.04
         </rosparam>
       </node>
-
-  <node pkg="rostopic"
-        type="rostopic"
-        name="subscriber"
-        args="hz $(arg cloud_out)"
-        output="screen"/>
+<!-- Keep only XYZ fields -->
+      <node pkg="nodelet"
+              type="nodelet"
+              name="xyz_filter_$(arg instance)"
+              args="load pointcloud_merger/PointCloudXYZFilterNodelet $(arg nodelet_manager) $(arg nodelet_args)"
+              respawn="$(arg respawn)">
+        <param name="input_topic" value="xyz_filter_$(arg instance)/output" />
+        <param name="output_topic" value="$(arg cloud_out)" />
+      </node>
+      
 </launch>
